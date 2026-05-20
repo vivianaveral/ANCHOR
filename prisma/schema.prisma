@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WeeklySnapshot {
+  id              String         @id @default(cuid())
+  weekStart       DateTime
+  createdAt       DateTime       @default(now())
+  isManualUpload  Boolean        @default(false)
+  rawGongJson     Json
+  rawHubspotJson  Json
+  aiSynthesis     String?
+  repScores       RepScore[]
+  dealSnapshots   DealSnapshot[]
+}
+
+model RepScore {
+  id           String         @id @default(cuid())
+  snapshotId   String
+  snapshot     WeeklySnapshot @relation(fields: [snapshotId], references: [id])
+  repName      String
+  overallScore Float
+  scoredCalls  Int
+  q1           Float
+  q2           Float
+  q3           Float
+  q4           Float
+  q5           Float
+  q6           Float
+  q7           Float
+  q8           Float
+  q9           Float
+  q10          Float
+  q11          Float
+  q12          Float
+  q13          Float
+  q14          Float
+  q15          Float
+  q16          Float
+  q17          Float
+  q18          Float
+  q19          Float
+  q20          Float
+  q21          Float
+  q22          Float
+  q23          Float
+  q24          Float
+  q25          Float
+  q26          Float
+  c3Text       String?
+  c4Text       String?
+  c5Text       String?
+}
+
+model DealSnapshot {
+  id               String         @id @default(cuid())
+  snapshotId       String
+  snapshot         WeeklySnapshot @relation(fields: [snapshotId], references: [id])
+  dealId           String
+  salesAgent       String
+  dealStage        String
+  createDate       DateTime?
+  firstMeetingDate DateTime?
+  closedWonDate    DateTime?
+  isClosedWon      Boolean
+  isOpenPrebilling Boolean
+  dealAgeDays      Int?
+}
