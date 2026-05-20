@@ -18,6 +18,8 @@ const CLOSED_WON_STAGE_KEYWORDS = [
   'interview scheduled',
   'agreement_sent',
   'agreement sent',
+  'onboarding',
+  'active client',
 ];
 
 const DEAL_PROPERTIES = [
@@ -200,72 +202,64 @@ export function parseHubspotCSV(csvText: string): DealSnapshotInput[] {
   const rows = csvToObjects(csvText);
   const deals: DealSnapshotInput[] = [];
 
+  // Helper: treat "(No value)" and blank as empty string
+  function val(v: string | undefined): string {
+    if (!v) return '';
+    const trimmed = v.trim();
+    return trimmed === '(No value)' ? '' : trimmed;
+  }
+
+  // Helper: find a column header whose lowercased value contains a keyword
+  const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
+  function findCol(keyword: string): string | undefined {
+    return headers.find((h) => h.toLowerCase().includes(keyword.toLowerCase()));
+  }
+
+  // HubSpot CSV column discovery — handles the quoted column names Gong exports:
+  // e.g. `Date entered "Recruiting (Sales Pipeline)"`
+  const recruitingCol      = findCol('recruiting');
+  const resumesSentCol     = findCol('resumes sent');
+  const interviewSchedCol  = findCol('interview scheduled');
+  const agreementSentCol   = findCol('agreement sent');
+
   for (const row of rows) {
-    const dealId =
-      row['Deal ID'] ?? row['deal_id'] ?? row['dealId'] ?? row['id'] ?? '';
-    const dealStage =
-      row['Deal Stage'] ?? row['deal_stage'] ?? row['dealstage'] ?? '';
-    const quickJob =
-      row['Quick Job'] ?? row['quick_job'] ?? row['quickJob'] ?? '';
+    const dealId    = val(row['Deal ID'] ?? row['deal_id'] ?? row['dealId'] ?? row['id']);
+    const dealStage = val(row['Deal Stage'] ?? row['deal_stage'] ?? row['dealstage']);
+    const quickJob  = val(row['Quick Job'] ?? row['quick_job'] ?? row['quickJob']);
 
     if (shouldExcludeDeal(dealStage, quickJob)) continue;
 
-    const rawAgent =
-      row['Sales Agent'] ??
-      row['sales_agent'] ??
-      row['salesAgent'] ??
-      row['Owner'] ??
-      '';
+    const rawAgent = val(
+      row['Sales Agent'] ?? row['sales_agent'] ?? row['salesAgent'] ?? row['Owner'],
+    );
+    // Skip rows with no agent (e.g. system/automated deals)
+    if (!rawAgent) continue;
+
     const salesAgent = normaliseName(rawAgent);
 
-    const createDateStr =
-      row['Create Date'] ??
-      row['create_date'] ??
-      row['createdate'] ??
-      row['createDate'] ??
-      '';
+    const createDateStr = val(row['Create Date'] ?? row['create_date'] ?? row['createdate'] ?? row['createDate']);
     const { createDate, dealAgeDays } = parseDealAge(createDateStr || null);
 
-    const firstMeetingDateStr =
-      row['First Meeting Date'] ??
-      row['first_meeting_date'] ??
-      row['firstMeetingDate'] ??
-      '';
+    const firstMeetingDateStr = val(row['First Meeting Date'] ?? row['first_meeting_date'] ?? row['firstMeetingDate']);
     let firstMeetingDate: Date | null = null;
     if (firstMeetingDateStr) {
       const d = new Date(firstMeetingDateStr);
       if (!isNaN(d.getTime())) firstMeetingDate = d;
     }
 
-    const closedWonDateStr =
-      row['Close Date'] ??
-      row['close_date'] ??
-      row['closedate'] ??
-      row['Closed Won Date'] ??
-      '';
+    const closedWonDateStr = val(row['Close Date'] ?? row['close_date'] ?? row['closedate'] ?? row['Closed Won Date']);
     let closedWonDate: Date | null = null;
     if (closedWonDateStr) {
       const d = new Date(closedWonDateStr);
       if (!isNaN(d.getTime())) closedWonDate = d;
     }
 
+    // Build the props object using discovered column names
     const isClosedWon = isClosedWonDeal(dealStage, {
-      hs_date_entered_recruiting:
-        row['hs_date_entered_recruiting'] ??
-        row['Date Entered Recruiting'] ??
-        undefined,
-      hs_date_entered_resumes_sent:
-        row['hs_date_entered_resumes_sent'] ??
-        row['Date Entered Resumes Sent'] ??
-        undefined,
-      hs_date_entered_interview_scheduled:
-        row['hs_date_entered_interview_scheduled'] ??
-        row['Date Entered Interview Scheduled'] ??
-        undefined,
-      hs_date_entered_agreement_sent:
-        row['hs_date_entered_agreement_sent'] ??
-        row['Date Entered Agreement Sent'] ??
-        undefined,
+      hs_date_entered_recruiting:          recruitingCol     ? val(row[recruitingCol])     || undefined : undefined,
+      hs_date_entered_resumes_sent:        resumesSentCol    ? val(row[resumesSentCol])    || undefined : undefined,
+      hs_date_entered_interview_scheduled: interviewSchedCol ? val(row[interviewSchedCol]) || undefined : undefined,
+      hs_date_entered_agreement_sent:      agreementSentCol  ? val(row[agreementSentCol])  || undefined : undefined,
     });
 
     const isOpenPrebilling = isPreBillingDeal(dealStage);

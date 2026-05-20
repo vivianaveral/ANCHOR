@@ -176,10 +176,69 @@ export function parseGongToRepScores(gongData: unknown): RepScoreInput[] {
 
 /**
  * Parse a Gong CSV export into RepScoreInput array.
- * Expected columns: Rep Name, Overall Score, Scored Calls, Q1..Q26, C3, C4, C5
+ *
+ * Gong exports use long column names like:
+ *   "User Name"
+ *   "ANCHOR — BruntWork Strategy Call - Scored Calls"
+ *   "ANCHOR — BruntWork Strategy Call - Overall Score"
+ *   "ANCHOR — BruntWork Strategy Call - Q1 ALIGN: ..."
+ *   "ANCHOR — BruntWork Strategy Call - C3 COACHING: ..."
+ *
+ * Individual Q scores are exported as 0–1 fractions and are multiplied
+ * by 100 here so all scores are stored on a 0–100 scale.
  */
 export function parseGongCSV(csvText: string): RepScoreInput[] {
   const rows = csvToObjects(csvText);
+  if (rows.length === 0) {
+    throw new Error('No rep scores found in Gong CSV. Check the file format.');
+  }
+
+  const headers = Object.keys(rows[0]);
+
+  // ── Helper: find a header by predicate (case-insensitive) ──────────────
+  function findHeader(pred: (lower: string) => boolean): string | undefined {
+    return headers.find((h) => pred(h.toLowerCase()));
+  }
+
+  // ── Rep name column ────────────────────────────────────────────────────
+  // Gong exports: "User Name". Fallback to legacy names.
+  const repNameCol = findHeader(
+    (h) => h === 'user name' || h === 'rep name' || h === 'rep_name' || h === 'repname',
+  );
+
+  if (!repNameCol) {
+    throw new Error(
+      `No rep scores found in Gong CSV. Check the file format. ` +
+        `(Could not find rep name column. First headers: ${headers.slice(0, 6).join(' | ')})`,
+    );
+  }
+
+  // ── Scored calls column ────────────────────────────────────────────────
+  const scoredCallsCol = findHeader((h) => h.includes('scored calls'));
+
+  // ── Q1–Q26 columns ─────────────────────────────────────────────────────
+  // Gong names: "... - Q1 ALIGN: ..." — match "- q{n}" NOT followed by digit.
+  const qCols: Record<number, string> = {};
+  for (let q = 1; q <= 26; q++) {
+    const col = headers.find((h) => {
+      const lower = h.toLowerCase();
+      return new RegExp(`- q${q}(?!\\d)`).test(lower) || lower === `q${q}`;
+    });
+    if (col) qCols[q] = col;
+  }
+
+  // ── C3 / C4 / C5 coaching text columns ────────────────────────────────
+  const c3Col = findHeader(
+    (h) => /- c3(?!\d)/.test(h) || h === 'c3',
+  );
+  const c4Col = findHeader(
+    (h) => /- c4(?!\d)/.test(h) || h === 'c4',
+  );
+  const c5Col = findHeader(
+    (h) => /- c5(?!\d)/.test(h) || h === 'c5',
+  );
+
+  // ── Aggregate rows by rep ──────────────────────────────────────────────
   const repMap: Record<
     string,
     {
@@ -193,8 +252,8 @@ export function parseGongCSV(csvText: string): RepScoreInput[] {
   > = {};
 
   for (const row of rows) {
-    const rawName = row['Rep Name'] ?? row['rep_name'] ?? row['repName'] ?? '';
-    if (!rawName.trim()) continue;
+    const rawName = (row[repNameCol] ?? '').trim();
+    if (!rawName) continue;
 
     const repName = normaliseName(rawName);
 
@@ -210,27 +269,38 @@ export function parseGongCSV(csvText: string): RepScoreInput[] {
     }
 
     const entry = repMap[repName];
-    const scoredCallsStr = row['Scored Calls'] ?? row['scored_calls'] ?? row['scoredCalls'] ?? '1';
-    entry.scoredCalls += Number(scoredCallsStr) || 1;
 
+    // Scored calls
+    const scStr = scoredCallsCol ? (row[scoredCallsCol] ?? '1') : '1';
+    entry.scoredCalls += Number(scStr) || 1;
+
+    // Q scores — Gong exports as 0–1 fractions, convert to 0–100
     for (let q = 1; q <= 26; q++) {
-      const val = row[`Q${q}`] ?? row[`q${q}`] ?? '';
+      const col = qCols[q];
+      if (!col) continue;
+      const val = (row[col] ?? '').trim();
       if (val !== '') {
         const num = parseFloat(val);
         if (!isNaN(num)) {
-          entry.qTotals[q] = (entry.qTotals[q] ?? 0) + num;
+          // Gong fractions are 0–1; multiply by 100 for storage
+          const score = num <= 1 ? num * 100 : num;
+          entry.qTotals[q] = (entry.qTotals[q] ?? 0) + score;
           entry.qCounts[q] = (entry.qCounts[q] ?? 0) + 1;
         }
       }
     }
 
-    const c3 = (row['C3'] ?? row['c3'] ?? '').trim();
-    const c4 = (row['C4'] ?? row['c4'] ?? '').trim();
-    const c5 = (row['C5'] ?? row['c5'] ?? '').trim();
-
+    // Coaching text
+    const c3 = c3Col ? (row[c3Col] ?? '').trim() : '';
+    const c4 = c4Col ? (row[c4Col] ?? '').trim() : '';
+    const c5 = c5Col ? (row[c5Col] ?? '').trim() : '';
     if (c3) entry.c3Texts.push(c3);
     if (c4) entry.c4Texts.push(c4);
     if (c5) entry.c5Texts.push(c5);
+  }
+
+  if (Object.keys(repMap).length === 0) {
+    throw new Error('No rep scores found in Gong CSV. Check the file format.');
   }
 
   return Object.entries(repMap).map(([repName, entry]) => {
