@@ -21,10 +21,10 @@ export function middleware(request: NextRequest) {
     const username = decoded.slice(0, colonIndex);
     const password = decoded.slice(colonIndex + 1);
 
-    const validUsername = process.env.APP_USERNAME ?? 'bruntwork';
     const validPassword = process.env.APP_PASSWORD ?? '';
 
-    if (validPassword && username === validUsername && password === validPassword) {
+    // Only check the password — username can be anything
+    if (validPassword && password === validPassword) {
       return NextResponse.next();
     }
   }
