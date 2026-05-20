@@ -1,0 +1,75 @@
+-- CreateTable
+CREATE TABLE "WeeklySnapshot" (
+    "id" TEXT NOT NULL,
+    "weekStart" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "isManualUpload" BOOLEAN NOT NULL DEFAULT false,
+    "rawGongJson" JSONB NOT NULL,
+    "rawHubspotJson" JSONB NOT NULL,
+    "aiSynthesis" TEXT,
+
+    CONSTRAINT "WeeklySnapshot_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RepScore" (
+    "id" TEXT NOT NULL,
+    "snapshotId" TEXT NOT NULL,
+    "repName" TEXT NOT NULL,
+    "overallScore" DOUBLE PRECISION NOT NULL,
+    "scoredCalls" INTEGER NOT NULL,
+    "q1" DOUBLE PRECISION NOT NULL,
+    "q2" DOUBLE PRECISION NOT NULL,
+    "q3" DOUBLE PRECISION NOT NULL,
+    "q4" DOUBLE PRECISION NOT NULL,
+    "q5" DOUBLE PRECISION NOT NULL,
+    "q6" DOUBLE PRECISION NOT NULL,
+    "q7" DOUBLE PRECISION NOT NULL,
+    "q8" DOUBLE PRECISION NOT NULL,
+    "q9" DOUBLE PRECISION NOT NULL,
+    "q10" DOUBLE PRECISION NOT NULL,
+    "q11" DOUBLE PRECISION NOT NULL,
+    "q12" DOUBLE PRECISION NOT NULL,
+    "q13" DOUBLE PRECISION NOT NULL,
+    "q14" DOUBLE PRECISION NOT NULL,
+    "q15" DOUBLE PRECISION NOT NULL,
+    "q16" DOUBLE PRECISION NOT NULL,
+    "q17" DOUBLE PRECISION NOT NULL,
+    "q18" DOUBLE PRECISION NOT NULL,
+    "q19" DOUBLE PRECISION NOT NULL,
+    "q20" DOUBLE PRECISION NOT NULL,
+    "q21" DOUBLE PRECISION NOT NULL,
+    "q22" DOUBLE PRECISION NOT NULL,
+    "q23" DOUBLE PRECISION NOT NULL,
+    "q24" DOUBLE PRECISION NOT NULL,
+    "q25" DOUBLE PRECISION NOT NULL,
+    "q26" DOUBLE PRECISION NOT NULL,
+    "c3Text" TEXT,
+    "c4Text" TEXT,
+    "c5Text" TEXT,
+
+    CONSTRAINT "RepScore_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DealSnapshot" (
+    "id" TEXT NOT NULL,
+    "snapshotId" TEXT NOT NULL,
+    "dealId" TEXT NOT NULL,
+    "salesAgent" TEXT NOT NULL,
+    "dealStage" TEXT NOT NULL,
+    "createDate" TIMESTAMP(3),
+    "firstMeetingDate" TIMESTAMP(3),
+    "closedWonDate" TIMESTAMP(3),
+    "isClosedWon" BOOLEAN NOT NULL,
+    "isOpenPrebilling" BOOLEAN NOT NULL,
+    "dealAgeDays" INTEGER,
+
+    CONSTRAINT "DealSnapshot_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "RepScore" ADD CONSTRAINT "RepScore_snapshotId_fkey" FOREIGN KEY ("snapshotId") REFERENCES "WeeklySnapshot"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DealSnapshot" ADD CONSTRAINT "DealSnapshot_snapshotId_fkey" FOREIGN KEY ("snapshotId") REFERENCES "WeeklySnapshot"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
