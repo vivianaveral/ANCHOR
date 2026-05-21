@@ -135,7 +135,7 @@ export default function DealRiskRadar({ repScores, dealSnapshots }: Props) {
               riskLevel === 'red'
                 ? 'bg-red-50 text-red-700 border border-red-200'
                 : riskLevel === 'amber'
-                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                  ? 'bg-yellow-50 text-yellow-700 border border-yellow-200'
                   : 'bg-gray-100 text-gray-500 border border-gray-200';
 
             const badgeLabel =
@@ -151,7 +151,7 @@ export default function DealRiskRadar({ repScores, dealSnapshots }: Props) {
                 className={`bg-white border-2 ${borderClass} rounded-lg p-5`}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-gray-900 font-semibold">{rep.repName}</h3>
+                  <h3 className="text-black font-bold">{rep.repName}</h3>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${badgeClass}`}>
                     {badgeLabel}
                   </span>
@@ -178,7 +178,7 @@ export default function DealRiskRadar({ repScores, dealSnapshots }: Props) {
                 </div>
 
                 {oldDeals.length > 0 && (
-                  <p className="text-amber-600 text-xs mb-3">
+                  <p className="text-yellow-600 text-xs mb-3">
                     {oldDeals.length} deal{oldDeals.length !== 1 ? 's' : ''} older than 5 days
                   </p>
                 )}

@@ -115,10 +115,10 @@ export default function HomePage() {
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <span className="text-amber-500 font-bold text-2xl tracking-tight">
+            <span className="text-brand font-bold text-2xl tracking-tight">
               ANCHOR
             </span>
-            <span className="text-gray-900 text-xl ml-2">Coaching Intelligence</span>
+            <span className="text-black font-bold text-xl ml-2">Coaching Intelligence</span>
             <span className="text-gray-400 text-sm ml-3">BruntWork Internal</span>
           </div>
         </div>
@@ -140,7 +140,7 @@ export default function HomePage() {
                 onClick={() => setActiveView(key)}
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   activeView === key
-                    ? 'bg-amber-500 text-white'
+                    ? 'bg-brand text-white'
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                 }`}
               >
@@ -160,7 +160,7 @@ export default function HomePage() {
         <div className="mb-6">
           <button
             onClick={() => setUploadOpen((prev) => !prev)}
-            className="text-sm text-amber-600 hover:text-amber-700 underline underline-offset-2"
+            className="text-sm text-brand hover:text-brand-600 underline underline-offset-2"
           >
             {uploadOpen ? 'Hide upload' : 'Upload Gong CSV + HubSpot CSV'}
           </button>
@@ -191,7 +191,7 @@ export default function HomePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 bg-amber-500 text-white font-medium text-sm rounded-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-brand text-white font-medium text-sm rounded-md hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Processing...' : 'Generate Brief'}
               </button>

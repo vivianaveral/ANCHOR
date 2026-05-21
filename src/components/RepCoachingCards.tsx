@@ -71,7 +71,7 @@ function teamSectionAvg(
 
 function scoreBadgeClass(score: number): string {
   if (score < 60) return 'bg-red-50 text-red-700 border border-red-200';
-  if (score <= 75) return 'bg-amber-50 text-amber-700 border border-amber-200';
+  if (score <= 75) return 'bg-yellow-50 text-yellow-700 border border-yellow-200';
   return 'bg-green-50 text-green-700 border border-green-200';
 }
 
@@ -99,7 +99,7 @@ export default function RepCoachingCards({ repScores, synthesis }: Props) {
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-gray-900 font-semibold text-base">{rep.repName}</h3>
+                <h3 className="text-black font-bold text-base">{rep.repName}</h3>
                 <p className="text-gray-400 text-xs mt-0.5">
                   {rep.scoredCalls} call{rep.scoredCalls !== 1 ? 's' : ''} scored
                 </p>
@@ -124,7 +124,7 @@ export default function RepCoachingCards({ repScores, synthesis }: Props) {
                   <div key={section.key}>
                     <div className="flex items-center justify-between mb-0.5">
                       <span className="text-xs text-gray-500">
-                        <span className="text-amber-600 font-semibold">
+                        <span className="text-brand font-bold">
                           {section.label}
                         </span>
                         {' — '}
@@ -147,8 +147,8 @@ export default function RepCoachingCards({ repScores, synthesis }: Props) {
 
             {/* Coaching priority */}
             {repSynth?.this_week ? (
-              <div className="bg-amber-50 border border-amber-100 rounded-md px-3 py-2">
-                <p className="text-xs text-amber-600 uppercase tracking-wide mb-1">
+              <div className="bg-brand-50 border border-brand-100 rounded-md px-3 py-2">
+                <p className="text-xs font-bold text-brand uppercase tracking-wide mb-1">
                   This week
                 </p>
                 <p className="text-gray-700 text-xs leading-relaxed">

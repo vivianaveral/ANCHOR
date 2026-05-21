@@ -13,7 +13,7 @@ function scoreBadge(score: number): { label: string; classes: string } {
   if (score < 60) {
     return { label: 'Priority Coaching', classes: 'bg-red-50 text-red-700 border border-red-200' };
   } else if (score <= 75) {
-    return { label: 'Needs Attention', classes: 'bg-amber-50 text-amber-700 border border-amber-200' };
+    return { label: 'Needs Attention', classes: 'bg-yellow-50 text-yellow-700 border border-yellow-200' };
   } else {
     return { label: 'On Track', classes: 'bg-green-50 text-green-700 border border-green-200' };
   }
@@ -38,18 +38,55 @@ export default function WeeklyBrief({ synthesis, repScores }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Revenue Opportunity banner */}
-      <div className="bg-emerald-50 border border-emerald-200 border-l-4 border-l-emerald-500 px-5 py-4 rounded-lg">
-        <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-1">
+      {/* Revenue Opportunity block */}
+      <div className="bg-brand-50 border border-brand-100 rounded-xl p-6">
+        <h2 className="text-xs font-bold text-brand uppercase tracking-widest mb-5">
           Revenue Opportunity
-        </p>
-        <p className="text-emerald-900 text-base leading-relaxed">{synthesis.exec_signal}</p>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Q1 — Score this week */}
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
+              Score This Week
+            </p>
+            <p className="text-gray-700 text-sm leading-relaxed">
+              {synthesis.revenue_opportunity.score_comparison}
+            </p>
+          </div>
+          {/* Q2 — Dollar value */}
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
+              What It&apos;s Worth
+            </p>
+            <p className="text-gray-700 text-sm leading-relaxed">
+              {synthesis.revenue_opportunity.dollar_value}
+            </p>
+          </div>
+          {/* Q3 — Top constraint */}
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
+              What&apos;s Blocking It
+            </p>
+            <p className="text-gray-700 text-sm leading-relaxed">
+              {synthesis.revenue_opportunity.top_constraint}
+            </p>
+          </div>
+          {/* Q4 — Action needed */}
+          <div className="bg-brand border border-brand-600 rounded-lg p-4">
+            <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-1.5">
+              Action Needed
+            </p>
+            <p className="text-white text-sm leading-relaxed font-medium">
+              {synthesis.revenue_opportunity.action_needed}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Team gaps */}
       <div>
-        <h2 className="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-3">
-          Where deals are slipping
+        <h2 className="text-black font-bold text-xs uppercase tracking-widest mb-3">
+          Where Deals Are Slipping
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {synthesis.team_gaps.map((gap, idx) => (
@@ -57,7 +94,7 @@ export default function WeeklyBrief({ synthesis, repScores }: Props) {
               key={idx}
               className="bg-white border border-gray-200 rounded-lg p-4"
             >
-              <h3 className="font-semibold text-gray-900 text-sm mb-2">{gap.title}</h3>
+              <h3 className="font-bold text-black text-sm mb-2">{gap.title}</h3>
               <p className="text-gray-500 text-sm leading-relaxed">{gap.why}</p>
             </div>
           ))}
@@ -66,7 +103,7 @@ export default function WeeklyBrief({ synthesis, repScores }: Props) {
 
       {/* Rep cards */}
       <div>
-        <h2 className="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-3">
+        <h2 className="text-black font-bold text-xs uppercase tracking-widest mb-3">
           Rep Coaching Notes
         </h2>
         <div className="space-y-4">
@@ -82,7 +119,7 @@ export default function WeeklyBrief({ synthesis, repScores }: Props) {
                 {/* Header row */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <h3 className="text-gray-900 font-semibold text-base">
+                    <h3 className="text-black font-bold text-base">
                       {rep.repName}
                     </h3>
                     <span
@@ -123,8 +160,8 @@ export default function WeeklyBrief({ synthesis, repScores }: Props) {
                     </div>
 
                     {/* This week focus */}
-                    <div className="bg-amber-50 border border-amber-100 rounded-md px-4 py-3 mb-4">
-                      <p className="text-xs text-amber-600 uppercase tracking-wide mb-1">
+                    <div className="bg-brand-50 border border-brand-100 rounded-md px-4 py-3 mb-4">
+                      <p className="text-xs font-bold text-brand uppercase tracking-wide mb-1">
                         This week&apos;s focus
                       </p>
                       <p className="text-gray-700 text-sm leading-relaxed">
@@ -137,7 +174,7 @@ export default function WeeklyBrief({ synthesis, repScores }: Props) {
                       onClick={() =>
                         setShareModal({ repName: rep.repName, repSynthesis: repSynth })
                       }
-                      className="text-sm border border-amber-500 text-amber-600 px-4 py-1.5 rounded-md hover:bg-amber-500 hover:text-white transition-colors"
+                      className="text-sm border border-brand text-brand px-4 py-1.5 rounded-md hover:bg-brand hover:text-white transition-colors"
                     >
                       Share with rep
                     </button>

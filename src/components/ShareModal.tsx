@@ -60,7 +60,7 @@ Good luck out there — you've got this.
       }}
     >
       <div className="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-lg shadow-xl">
-        <h2 className="text-gray-900 font-semibold text-lg mb-4">
+        <h2 className="text-black font-bold text-lg mb-4">
           Message for {repName}
         </h2>
 
@@ -75,7 +75,7 @@ Good luck out there — you've got this.
         <div className="flex gap-3 mt-4">
           <button
             onClick={() => void handleCopy()}
-            className="flex-1 bg-amber-500 text-white font-medium text-sm py-2 rounded-md hover:bg-amber-600 transition-colors"
+            className="flex-1 bg-brand text-white font-medium text-sm py-2 rounded-md hover:bg-brand-600 transition-colors"
           >
             {copied ? 'Copied!' : 'Copy to clipboard'}
           </button>

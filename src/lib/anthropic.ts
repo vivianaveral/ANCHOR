@@ -98,16 +98,32 @@ function formatDealSnapshotsForPrompt(dealSnapshots: DealSnapshotInput[]): strin
 export async function generateCoachingBrief(
   repScores: RepScoreInput[],
   dealSnapshots: DealSnapshotInput[],
+  previousWeekAvg?: number,
 ): Promise<AISynthesis> {
   const client = new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
   });
+
+  // Calculate this week's team average for the prompt
+  const thisWeekAvg =
+    repScores.length > 0
+      ? Math.round(repScores.reduce((sum, r) => sum + r.overallScore, 0) / repScores.length)
+      : 0;
+
+  const prevWeekLine =
+    previousWeekAvg !== undefined
+      ? `Previous week team average: ${Math.round(previousWeekAvg)}/100`
+      : 'Previous week team average: not available (first snapshot)';
 
   const repScoresText = formatRepScoresForPrompt(repScores);
   const dealText = formatDealSnapshotsForPrompt(dealSnapshots);
   const repNames = repScores.map((r) => r.repName);
 
   const userPrompt = `Here is this week's sales performance data for the BruntWork sales team.
+
+## Team Score Summary
+This week team average: ${thisWeekAvg}/100
+${prevWeekLine}
 
 ## Rep Scorecard Data
 ${repScoresText}
@@ -119,7 +135,12 @@ ${dealText}
 Generate a weekly coaching brief as a JSON object matching this exact shape:
 
 {
-  "exec_signal": "A single commercial insight for the CRO and Head of Sales framed as a GROWTH OPPORTUNITY — not a warning. Reference specific numbers from the pipeline data: how many open deals are at risk, how many could be recovered if the team fixes the biggest skill gap, and an estimated MRR impact (assume $2,500 MRR per deal if no other data available). Example format: 'Fixing [specific behaviour] across [N] reps could recover an estimated [X] deals this month worth approximately $[Y] in MRR.' Be specific and forward-looking.",
+  "revenue_opportunity": {
+    "score_comparison": "One factual sentence: state the team's overall score this week (${thisWeekAvg}/100) and compare to last week if available. Example: 'The team averaged 47/100 this week, down 4 points from last week.' If no prior week, say so plainly.",
+    "dollar_value": "Estimate the dollar value of the gap or opportunity with a range. Use the pipeline data (open deals, closed won count, win rate). State your assumption clearly. Example: 'Based on 12 open pre-billing deals and the team closing roughly 1 in 3, fixing the top skill gap could unlock an estimated $9,600–$24,000 AUD in MRR this month. Assumes average contract value of $800–$2,000 AUD/month per placement.' Use real numbers from the data above.",
+    "top_constraint": "One sentence only. The single highest-impact ANCHOR behaviour the team is missing right now. Plain English, no jargon, no Q-numbers. This is the one thing, if fixed, that would move the most deals.",
+    "action_needed": "One specific action only. Assign it if possible. Example: 'Elizna to run a 15-minute team drill on asking for the yes before Friday standup.' Be concrete and time-bound."
+  },
   "team_gaps": [
     {
       "title": "Short phrase naming the gap",
@@ -136,13 +157,13 @@ Rules:
 - Return valid JSON only. No markdown, no code fences, no extra text.
 - Do not use Q-numbers anywhere. Use plain English skill names.
 - Do not use the word ANCHOR.
-- No percentages anywhere.
 - Write in plain conversational English.
 - Rep notes must use second person ("You're doing well at...", "Focus on...").
 - Be specific and constructive. Reference actual scores and patterns.
 - "this_week" must be one concrete, actionable thing the rep can try on their very next call.
 - "team_gaps" should list the top 3 patterns affecting multiple reps, tied to deal outcomes.
-- "exec_signal" must be framed as a revenue OPPORTUNITY with specific deal counts and estimated MRR — never as a warning or risk statement. Pull numbers from the pipeline data provided.`;
+- "dollar_value" must include a dollar range, state the ACV assumption, and use real numbers from the pipeline data.
+- "action_needed" must name who does it and by when.`;
 
   const response = await client.messages.create({
     model: MODEL,

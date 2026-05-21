@@ -1,5 +1,16 @@
+export interface RevenueOpportunity {
+  /** Q1: Team ANCHOR score this week and comparison to last week */
+  score_comparison: string;
+  /** Q2: Estimated dollar value / cost of the gap, with range and stated assumption */
+  dollar_value: string;
+  /** Q3: The single highest-impact skill gap blocking the upside */
+  top_constraint: string;
+  /** Q4: One specific, assigned action to capture the opportunity */
+  action_needed: string;
+}
+
 export interface AISynthesis {
-  exec_signal: string;
+  revenue_opportunity: RevenueOpportunity;
   team_gaps: Array<{
     title: string;
     why: string;

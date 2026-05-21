@@ -52,8 +52,20 @@ export async function GET(request: NextRequest) {
     const repScores = parseGongToRepScores(gongData);
     const dealSnapshots = parseHubspotToDealSnapshots(hubspotData);
 
+    // Look up previous week's team average for week-over-week comparison
+    const prevSnapshot = await prisma.weeklySnapshot.findFirst({
+      where: { weekStart: { lt: weekStart } },
+      orderBy: { weekStart: 'desc' },
+      include: { repScores: { select: { overallScore: true } } },
+    });
+    const previousWeekAvg =
+      prevSnapshot && prevSnapshot.repScores.length > 0
+        ? prevSnapshot.repScores.reduce((sum, r) => sum + r.overallScore, 0) /
+          prevSnapshot.repScores.length
+        : undefined;
+
     // Generate AI synthesis
-    const synthesis = await generateCoachingBrief(repScores, dealSnapshots);
+    const synthesis = await generateCoachingBrief(repScores, dealSnapshots, previousWeekAvg);
 
     // Save to database in a transaction
     const snapshotResult = await prisma.$transaction(async (tx) => {

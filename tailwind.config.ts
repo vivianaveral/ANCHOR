@@ -5,7 +5,16 @@ const config: Config = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        brand: {
+          DEFAULT: '#0074EF',
+          50:  '#EEF5FF',
+          100: '#DCEAFF',
+          600: '#005FCC',
+        },
+      },
+    },
   },
   plugins: [],
 };

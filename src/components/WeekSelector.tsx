@@ -36,7 +36,7 @@ export default function WeekSelector({ snapshots, selectedId, onChange }: Props)
     <select
       value={selectedId ?? ''}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-white text-gray-700 text-sm rounded-md px-3 py-2 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-amber-400"
+      className="bg-white text-gray-700 text-sm rounded-md px-3 py-2 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand"
     >
       {snapshots.map((snap) => (
         <option key={snap.id} value={snap.id}>
