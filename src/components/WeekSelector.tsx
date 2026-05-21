@@ -28,7 +28,7 @@ function formatWeekLabel(item: SnapshotListItem): string {
 export default function WeekSelector({ snapshots, selectedId, onChange }: Props) {
   if (snapshots.length === 0) {
     return (
-      <span className="text-sm text-gray-500">No snapshots available</span>
+      <span className="text-sm text-gray-400">No snapshots available</span>
     );
   }
 
@@ -36,7 +36,7 @@ export default function WeekSelector({ snapshots, selectedId, onChange }: Props)
     <select
       value={selectedId ?? ''}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-gray-800 text-gray-200 text-sm rounded-md px-3 py-2 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-amber-400"
+      className="bg-white text-gray-700 text-sm rounded-md px-3 py-2 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-amber-400"
     >
       {snapshots.map((snap) => (
         <option key={snap.id} value={snap.id}>

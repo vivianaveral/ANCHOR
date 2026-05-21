@@ -110,16 +110,16 @@ export default function HomePage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <header className="bg-gray-900 border-b border-gray-800 px-6 py-4">
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <span className="text-amber-400 font-bold text-2xl tracking-tight">
+            <span className="text-amber-500 font-bold text-2xl tracking-tight">
               ANCHOR
             </span>
-            <span className="text-white text-xl ml-2">Coaching Intelligence</span>
-            <span className="text-gray-500 text-sm ml-3">BruntWork Internal</span>
+            <span className="text-gray-900 text-xl ml-2">Coaching Intelligence</span>
+            <span className="text-gray-400 text-sm ml-3">BruntWork Internal</span>
           </div>
         </div>
       </header>
@@ -140,8 +140,8 @@ export default function HomePage() {
                 onClick={() => setActiveView(key)}
                 className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   activeView === key
-                    ? 'bg-amber-400 text-gray-950'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    ? 'bg-amber-500 text-white'
+                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                 }`}
               >
                 {label}
@@ -160,7 +160,7 @@ export default function HomePage() {
         <div className="mb-6">
           <button
             onClick={() => setUploadOpen((prev) => !prev)}
-            className="text-sm text-amber-400 hover:text-amber-300 underline underline-offset-2"
+            className="text-sm text-amber-600 hover:text-amber-700 underline underline-offset-2"
           >
             {uploadOpen ? 'Hide upload' : 'Upload Gong CSV + HubSpot CSV'}
           </button>
@@ -168,30 +168,30 @@ export default function HomePage() {
           {uploadOpen && (
             <form
               onSubmit={(e) => void handleUpload(e)}
-              className="mt-3 bg-gray-900 border border-gray-700 rounded-lg p-4 flex flex-wrap gap-4 items-end"
+              className="mt-3 bg-white border border-gray-200 rounded-lg p-4 flex flex-wrap gap-4 items-end"
             >
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Gong CSV</label>
+                <label className="block text-xs text-gray-500 mb-1">Gong CSV</label>
                 <input
                   ref={gongFileRef}
                   type="file"
                   accept=".csv"
-                  className="text-sm text-gray-300 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:bg-gray-700 file:text-gray-200 hover:file:bg-gray-600"
+                  className="text-sm text-gray-700 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-400 mb-1">HubSpot CSV</label>
+                <label className="block text-xs text-gray-500 mb-1">HubSpot CSV</label>
                 <input
                   ref={hubspotFileRef}
                   type="file"
                   accept=".csv"
-                  className="text-sm text-gray-300 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:bg-gray-700 file:text-gray-200 hover:file:bg-gray-600"
+                  className="text-sm text-gray-700 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 bg-amber-400 text-gray-950 font-medium text-sm rounded-md hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-amber-500 text-white font-medium text-sm rounded-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Processing...' : 'Generate Brief'}
               </button>
@@ -199,19 +199,19 @@ export default function HomePage() {
           )}
 
           {uploadStatus && (
-            <p className="mt-2 text-sm text-gray-400">{uploadStatus}</p>
+            <p className="mt-2 text-sm text-gray-500">{uploadStatus}</p>
           )}
         </div>
 
         {/* Main content */}
         {loading && !snapshot ? (
           <div className="flex items-center justify-center py-24">
-            <p className="text-gray-500 text-lg">Loading...</p>
+            <p className="text-gray-400 text-lg">Loading...</p>
           </div>
         ) : !snapshot ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <p className="text-gray-500 text-lg">No snapshot selected.</p>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-400 text-lg">No snapshot selected.</p>
+            <p className="text-gray-500 text-sm">
               Run the weekly sync or upload CSV files to get started.
             </p>
           </div>

@@ -70,9 +70,9 @@ function teamSectionAvg(
 }
 
 function scoreBadgeClass(score: number): string {
-  if (score < 60) return 'bg-red-900 text-red-300 border border-red-700';
-  if (score <= 75) return 'bg-amber-900 text-amber-300 border border-amber-700';
-  return 'bg-green-900 text-green-300 border border-green-700';
+  if (score < 60) return 'bg-red-50 text-red-700 border border-red-200';
+  if (score <= 75) return 'bg-amber-50 text-amber-700 border border-amber-200';
+  return 'bg-green-50 text-green-700 border border-green-200';
 }
 
 export default function RepCoachingCards({ repScores, synthesis }: Props) {
@@ -94,13 +94,13 @@ export default function RepCoachingCards({ repScores, synthesis }: Props) {
         return (
           <div
             key={rep.id}
-            className="bg-gray-900 border border-gray-700 rounded-lg p-5"
+            className="bg-white border border-gray-200 rounded-lg p-5"
           >
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-white font-semibold text-base">{rep.repName}</h3>
-                <p className="text-gray-500 text-xs mt-0.5">
+                <h3 className="text-gray-900 font-semibold text-base">{rep.repName}</h3>
+                <p className="text-gray-400 text-xs mt-0.5">
                   {rep.scoredCalls} call{rep.scoredCalls !== 1 ? 's' : ''} scored
                 </p>
               </div>
@@ -117,24 +117,24 @@ export default function RepCoachingCards({ repScores, synthesis }: Props) {
                 const repAvg = sectionAvg(rep, section.questions);
                 const teamAvg = teamAvgs[section.key];
                 const isWeak = repAvg < teamAvg - 5;
-                const barColor = isWeak ? 'bg-red-500' : 'bg-blue-500';
+                const barColor = isWeak ? 'bg-red-400' : 'bg-blue-400';
                 const widthPct = Math.min(100, Math.max(0, repAvg));
 
                 return (
                   <div key={section.key}>
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-xs text-gray-400">
-                        <span className="text-amber-400 font-semibold">
+                      <span className="text-xs text-gray-500">
+                        <span className="text-amber-600 font-semibold">
                           {section.label}
                         </span>
                         {' — '}
                         {section.fullName}
                       </span>
-                      <span className={`text-xs font-medium ${isWeak ? 'text-red-400' : 'text-gray-300'}`}>
+                      <span className={`text-xs font-medium ${isWeak ? 'text-red-600' : 'text-gray-500'}`}>
                         {Math.round(repAvg)}
                       </span>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div className="w-full bg-gray-100 rounded-full h-2">
                       <div
                         className={`h-2 rounded-full ${barColor} transition-all`}
                         style={{ width: `${widthPct}%` }}
@@ -147,17 +147,17 @@ export default function RepCoachingCards({ repScores, synthesis }: Props) {
 
             {/* Coaching priority */}
             {repSynth?.this_week ? (
-              <div className="bg-gray-800 rounded-md px-3 py-2">
-                <p className="text-xs text-amber-400 uppercase tracking-wide mb-1">
+              <div className="bg-amber-50 border border-amber-100 rounded-md px-3 py-2">
+                <p className="text-xs text-amber-600 uppercase tracking-wide mb-1">
                   This week
                 </p>
-                <p className="text-gray-300 text-xs leading-relaxed">
+                <p className="text-gray-700 text-xs leading-relaxed">
                   {repSynth.this_week}
                 </p>
               </div>
             ) : (
-              <div className="bg-gray-800 rounded-md px-3 py-2">
-                <p className="text-gray-600 text-xs italic">
+              <div className="bg-gray-50 rounded-md px-3 py-2">
+                <p className="text-gray-400 text-xs italic">
                   No coaching note available.
                 </p>
               </div>
