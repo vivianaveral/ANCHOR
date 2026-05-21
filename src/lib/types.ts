@@ -10,7 +10,9 @@ export interface RevenueOpportunity {
 }
 
 export interface AISynthesis {
-  revenue_opportunity: RevenueOpportunity;
+  revenue_opportunity?: RevenueOpportunity;
+  /** @deprecated — old snapshots only. Use revenue_opportunity instead. */
+  exec_signal?: string;
   team_gaps: Array<{
     title: string;
     why: string;

@@ -43,44 +43,57 @@ export default function WeeklyBrief({ synthesis, repScores }: Props) {
         <h2 className="text-xs font-bold text-brand uppercase tracking-widest mb-5">
           Revenue Opportunity
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Q1 — Score this week */}
+        {synthesis.revenue_opportunity ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Q1 — Score this week */}
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
+                Score This Week
+              </p>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {synthesis.revenue_opportunity.score_comparison}
+              </p>
+            </div>
+            {/* Q2 — Dollar value */}
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
+                What It&apos;s Worth
+              </p>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {synthesis.revenue_opportunity.dollar_value}
+              </p>
+            </div>
+            {/* Q3 — Top constraint */}
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
+                What&apos;s Blocking It
+              </p>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {synthesis.revenue_opportunity.top_constraint}
+              </p>
+            </div>
+            {/* Q4 — Action needed */}
+            <div className="bg-brand border border-brand-600 rounded-lg p-4">
+              <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-1.5">
+                Action Needed
+              </p>
+              <p className="text-white text-sm leading-relaxed font-medium">
+                {synthesis.revenue_opportunity.action_needed}
+              </p>
+            </div>
+          </div>
+        ) : (
+          // Old snapshot format — show legacy signal if present, otherwise prompt re-upload
           <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
-              Score This Week
-            </p>
-            <p className="text-gray-700 text-sm leading-relaxed">
-              {synthesis.revenue_opportunity.score_comparison}
-            </p>
+            {synthesis.exec_signal ? (
+              <p className="text-gray-700 text-sm leading-relaxed">{synthesis.exec_signal}</p>
+            ) : (
+              <p className="text-gray-400 text-sm italic">
+                Re-upload this week&apos;s files to generate the Revenue Opportunity block.
+              </p>
+            )}
           </div>
-          {/* Q2 — Dollar value */}
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
-              What It&apos;s Worth
-            </p>
-            <p className="text-gray-700 text-sm leading-relaxed">
-              {synthesis.revenue_opportunity.dollar_value}
-            </p>
-          </div>
-          {/* Q3 — Top constraint */}
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
-              What&apos;s Blocking It
-            </p>
-            <p className="text-gray-700 text-sm leading-relaxed">
-              {synthesis.revenue_opportunity.top_constraint}
-            </p>
-          </div>
-          {/* Q4 — Action needed */}
-          <div className="bg-brand border border-brand-600 rounded-lg p-4">
-            <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-1.5">
-              Action Needed
-            </p>
-            <p className="text-white text-sm leading-relaxed font-medium">
-              {synthesis.revenue_opportunity.action_needed}
-            </p>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Team gaps */}
