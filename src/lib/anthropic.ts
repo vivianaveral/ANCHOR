@@ -119,57 +119,55 @@ export async function generateCoachingBrief(
   const dealText = formatDealSnapshotsForPrompt(dealSnapshots);
   const repNames = repScores.map((r) => r.repName);
 
-  const userPrompt = `Here is this week's sales performance data for the BruntWork sales team.
+  const userPrompt = `You are generating a weekly sales coaching brief for BruntWork. Respond with a single valid JSON object — no markdown, no code fences, no extra text before or after the JSON.
 
-## Team Score Summary
-This week team average: ${thisWeekAvg}/100
+## DATA
+
+Team score this week: ${thisWeekAvg}/100
 ${prevWeekLine}
 
-## Rep Scorecard Data
-${repScoresText}
-
-## Deal Pipeline Context
+Pipeline:
 ${dealText}
 
-## Your Task
-Generate a weekly coaching brief as a JSON object matching this exact shape:
+Rep scorecards:
+${repScoresText}
+
+## REQUIRED JSON SHAPE
+
+Return exactly this structure with all fields populated:
 
 {
   "revenue_opportunity": {
-    "score_comparison": "One factual sentence: state the team's overall score this week (${thisWeekAvg}/100) and compare to last week if available. Example: 'The team averaged 47/100 this week, down 4 points from last week.' If no prior week, say so plainly.",
-    "dollar_value": "Estimate the dollar value of the gap or opportunity with a range. Use the pipeline data (open deals, closed won count, win rate). State your assumption clearly. Example: 'Based on 12 open pre-billing deals and the team closing roughly 1 in 3, fixing the top skill gap could unlock an estimated $9,600–$24,000 AUD in MRR this month. Assumes average contract value of $800–$2,000 AUD/month per placement.' Use real numbers from the data above.",
-    "top_constraint": "One sentence only. The single highest-impact ANCHOR behaviour the team is missing right now. Plain English, no jargon, no Q-numbers. This is the one thing, if fixed, that would move the most deals.",
-    "action_needed": "One specific action only. Assign it if possible. Example: 'Elizna to run a 15-minute team drill on asking for the yes before Friday standup.' Be concrete and time-bound."
+    "score_this_week": "REPLACE: One sentence. State the team average score (${thisWeekAvg}/100) and compare to last week if available. Example: 'The team averaged 47/100 this week, down 6 points from last week.' If no prior week data, say: 'The team averaged ${thisWeekAvg}/100 this week — no prior week to compare.'",
+    "what_its_worth": "REPLACE: Dollar estimate with range. Use the real pipeline numbers above. Formula: open pre-billing deals × estimated conversion improvement × $1,200 AUD avg placement value. State assumption. Example: 'Based on 14 open deals and a realistic 2-deal conversion improvement, fixing the top gap is worth an estimated $2,400–$4,800 AUD in monthly recurring revenue. Assumes $1,200 AUD avg placement value per FTE.'",
+    "one_blocker": "REPLACE: One sentence only. The single highest-impact behaviour the team is failing to do — the one thing that, if fixed, moves the most deals. No jargon. Plain English. Example: 'Reps are not asking for a direct yes or no commitment before ending the call.'",
+    "one_action": "REPLACE: One specific action, assigned to a person, with a timeframe. Example: 'Elizna to run a 10-minute role-play drill on closing language before this Friday's team standup.'"
   },
   "team_gaps": [
-    {
-      "title": "Short phrase naming the gap",
-      "why": "One or two sentences explaining why this is hurting deals",
-      "affected_count": <number of reps affected>
-    }
+    { "title": "REPLACE: short gap name", "why": "REPLACE: 1-2 sentences on why this costs deals", "affected_count": 0 },
+    { "title": "REPLACE: short gap name", "why": "REPLACE: 1-2 sentences on why this costs deals", "affected_count": 0 },
+    { "title": "REPLACE: short gap name", "why": "REPLACE: 1-2 sentences on why this costs deals", "affected_count": 0 }
   ],
   "reps": {
-    ${repNames.map((name) => `"${name}": { "doing_well": "...", "focus_on": "...", "this_week": "..." }`).join(',\n    ')}
+    ${repNames.map((name) => `"${name}": { "doing_well": "REPLACE: second person, specific strength", "focus_on": "REPLACE: second person, what is costing them deals", "this_week": "REPLACE: one concrete action for their next call" }`).join(',\n    ')}
   }
 }
 
-Rules:
-- Return valid JSON only. No markdown, no code fences, no extra text.
-- Do not use Q-numbers anywhere. Use plain English skill names.
-- Do not use the word ANCHOR.
-- Write in plain conversational English.
-- Rep notes must use second person ("You're doing well at...", "Focus on...").
-- Be specific and constructive. Reference actual scores and patterns.
-- "this_week" must be one concrete, actionable thing the rep can try on their very next call.
-- "team_gaps" should list the top 3 patterns affecting multiple reps, tied to deal outcomes.
-- "dollar_value" must include a dollar range, state the ACV assumption, and use real numbers from the pipeline data.
-- "action_needed" must name who does it and by when.`;
+## RULES
+- Return valid JSON only. No markdown. No code fences. No text before or after the JSON.
+- Replace every "REPLACE: ..." value with the real answer.
+- Never use Q-numbers. Use plain English skill names.
+- Never use the word ANCHOR.
+- rep notes: second person ("You're doing well at...", "Focus on...").
+- team_gaps: exactly 3 items.
+- one_blocker: one sentence, plain English, no jargon.
+- one_action: name a specific person and a specific deadline.
+- what_its_worth: must include a dollar range and state the $1,200 AUD assumption.`;
 
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 4096,
-    system:
-      'You are an expert sales coach. Your job is to generate a weekly coaching brief for a BruntWork sales team. Be specific, constructive, and forward-looking. Use plain conversational English. Always respond with valid JSON only.',
+    system: 'You are a sales coaching assistant. You output only valid JSON. Never output markdown, code fences, or explanatory text. Only output the raw JSON object.',
     messages: [
       {
         role: 'user',

@@ -44,55 +44,49 @@ export default function WeeklyBrief({ synthesis, repScores }: Props) {
           Revenue Opportunity
         </h2>
         {synthesis.revenue_opportunity ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Q1 — Score this week */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
+          <div className="divide-y divide-gray-100">
+            {/* Row 1 — Score This Week */}
+            <div className="py-4 first:pt-0">
+              <p className="text-xs font-bold text-brand uppercase tracking-widest mb-1">
                 Score This Week
               </p>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {synthesis.revenue_opportunity.score_comparison}
+              <p className="text-black text-sm leading-relaxed">
+                {synthesis.revenue_opportunity.score_this_week}
               </p>
             </div>
-            {/* Q2 — Dollar value */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
+            {/* Row 2 — What It's Worth */}
+            <div className="py-4">
+              <p className="text-xs font-bold text-brand uppercase tracking-widest mb-1">
                 What It&apos;s Worth
               </p>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {synthesis.revenue_opportunity.dollar_value}
+              <p className="text-black text-sm leading-relaxed">
+                {synthesis.revenue_opportunity.what_its_worth}
               </p>
             </div>
-            {/* Q3 — Top constraint */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <p className="text-[10px] font-bold text-black uppercase tracking-widest mb-1.5">
-                What&apos;s Blocking It
+            {/* Row 3 — One Blocker */}
+            <div className="py-4">
+              <p className="text-xs font-bold text-brand uppercase tracking-widest mb-1">
+                One Blocker
               </p>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {synthesis.revenue_opportunity.top_constraint}
+              <p className="text-black text-sm leading-relaxed">
+                {synthesis.revenue_opportunity.one_blocker}
               </p>
             </div>
-            {/* Q4 — Action needed */}
-            <div className="bg-brand border border-brand-600 rounded-lg p-4">
-              <p className="text-[10px] font-bold text-white uppercase tracking-widest mb-1.5">
-                Action Needed
+            {/* Row 4 — One Action */}
+            <div className="py-4 last:pb-0">
+              <p className="text-xs font-bold text-brand uppercase tracking-widest mb-1">
+                One Action
               </p>
-              <p className="text-white text-sm leading-relaxed font-medium">
-                {synthesis.revenue_opportunity.action_needed}
+              <p className="text-black text-sm leading-relaxed font-medium">
+                {synthesis.revenue_opportunity.one_action}
               </p>
             </div>
           </div>
         ) : (
-          // Old snapshot format — show legacy signal if present, otherwise prompt re-upload
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            {synthesis.exec_signal ? (
-              <p className="text-gray-700 text-sm leading-relaxed">{synthesis.exec_signal}</p>
-            ) : (
-              <p className="text-gray-400 text-sm italic">
-                Re-upload this week&apos;s files to generate the Revenue Opportunity block.
-              </p>
-            )}
-          </div>
+          // Old snapshot — prompt re-upload
+          <p className="text-gray-400 text-sm italic">
+            Re-upload this week&apos;s files to generate the Revenue Opportunity block.
+          </p>
         )}
       </div>
 
